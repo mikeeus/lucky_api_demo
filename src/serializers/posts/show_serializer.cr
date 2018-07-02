@@ -4,6 +4,7 @@ class Posts::ShowSerializer < Lucky::Serializer
 
   def render
     {
+      id: @post.id,
       title: @post.title,
       content: @post.content,
       author: @post.user!.name,
