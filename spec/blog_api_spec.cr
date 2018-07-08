@@ -53,7 +53,7 @@ describe App do
       user = UserBox.new.create
       
       # visit sign in endpoint
-      visitor.post("/auth/sign_in", ({
+      visitor.post("/sign_in", ({
         "sign_in:email" => user.email,
         "sign_in:password" => "password"
       }))
