@@ -20,6 +20,10 @@ shards:
     github: luckyframework/habitat
     version: 0.3.0
 
+  jwt:
+    github: crystal-community/jwt
+    version: 0.3.0
+
   lucky:
     github: luckyframework/lucky
     version: 0.11.0
