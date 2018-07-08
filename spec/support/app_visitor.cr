@@ -11,18 +11,22 @@ class AppVisitor
     @response = process_request(request)
   end
 
-  def put(path : String, body : Hash(String, String))
-    request_with_body("PUT", path, with_csrf_token(body))
+  def put(path : String, body : Hash(String, String), headers_hash : Hash(String, String)? = nil)
+    headers = headers_hash ? hash_to_headers(headers_hash) : nil
+    request_with_body("PUT", path, with_csrf_token(body), headers)
   end
 
-  def post(path : String, body : Hash(String, String))
-    request_with_body("POST", path, with_csrf_token(body))
+  def post(path : String, body : Hash(String, String), headers_hash : Hash(String, String)? = nil)
+    headers = headers_hash ? hash_to_headers(headers_hash) : nil
+    request_with_body("POST", path, with_csrf_token(body), headers)
   end
 
   def response_body
     body = @response.not_nil!.body
     if body[0,5] == "ERROR"
       raise Exception.new(body)
+    elsif body == ""
+      JSON.parse("{}")
     else
       JSON.parse(body)
     end
@@ -33,12 +37,12 @@ class AppVisitor
     body
   end
 
-  private def request_with_body(method : String, path : String, body : Hash(String, String))
+  private def request_with_body(method : String, path : String, body : Hash(String, String), headers : HTTP::Headers? = nil)
     body_strings = [] of String
     body.each do |key, value|
       body_strings << "#{URI.escape(key)}=#{URI.escape(value)}"
     end
-    request = HTTP::Request.new(method, path, nil, body_strings.join("&"))
+    request = HTTP::Request.new(method, path, headers, body_strings.join("&"))
     @response = process_request(request)
   end
 
@@ -64,6 +68,12 @@ class AppVisitor
       Lucky::StaticFileHandler.new("./public", false),
       Lucky::RouteNotFoundHandler.new
     ])
+  end
+
+  private def hash_to_headers(hash : Hash(String, String))
+    headers = HTTP::Headers.new
+    hash.keys.map { |key| headers.add key, hash[key]}
+    headers
   end
 
   module Matchers
