@@ -1,5 +1,7 @@
 require "./spec_helper"
 
+include GenerateToken
+
 describe App do
   visitor = AppVisitor.new
 
@@ -35,13 +37,7 @@ describe App do
     it "creates post" do
       user = UserBox.create
 
-      visitor.post("/posts", ({
-        "post:title" => "New Post",
-        "post:content" => "Probably the best post you've ever read",
-        "post:published_at" => Time.now.to_s,
-        "post:tags" => "dope, informative",
-        "post:comment_id" => "1"
-      }))
+      visitor.post("/posts", new_post_data)
 
       visitor.response_body["title"].should eq "New Post"
     end
@@ -76,5 +72,29 @@ describe App do
 
       UserQuery.new.email("test@email.com").first.should_not be_nil
     end
+
+    it "allows authenticated users to create posts" do
+      user = UserBox.create
+      token = generate_token(user)
+
+      visitor.post("/posts", new_post_data, { "Authorization" => token })
+
+      visitor.response_body["title"].should eq new_post_data["post:title"]
+    end
+
+    it "rejects unauthenticated requests to protected actions" do
+      visitor.post("/posts", new_post_data)
+      visitor.response.status_code.should eq 401
+    end
   end
+end
+
+def new_post_data
+  {
+    "post:title" => "New Post",
+    "post:content" => "Probably the best post you've ever read",
+    "post:published_at" => Time.now.to_s,
+    "post:tags" => "dope, informative",
+    "post:comment_id" => "1"
+  }
 end
