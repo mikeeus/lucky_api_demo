@@ -46,4 +46,21 @@ describe App do
       visitor.response_body["title"].should eq "New Post"
     end
   end
+
+  describe "auth" do
+    it "signs in valid user" do
+      # create a user
+      user = UserBox.new.create
+      
+      # visit sign in endpoint
+      visitor.post("/auth/sign_in", ({
+        "sign_in:email" => user.email,
+        "sign_in:password" => "password"
+      }))
+      
+      # check response has status: 200 and authorization header with "Bearer"
+      visitor.response.status_code.should eq 200
+      visitor.response.headers["Authorization"].should_not be_nil
+    end
+  end
 end
