@@ -62,5 +62,19 @@ describe App do
       visitor.response.status_code.should eq 200
       visitor.response.headers["Authorization"].should_not be_nil
     end
+
+    it "creates user on sign up" do
+      visitor.post("/sign_up", ({
+        "sign_up:name" => "New User",
+        "sign_up:email" => "test@email.com",
+        "sign_up:password" => "password",
+        "sign_up:password_confirmation" => "password"
+      }))
+
+      visitor.response.status_code.should eq 200
+      visitor.response.headers["Authorization"].should_not be_nil
+
+      UserQuery.new.email("test@email.com").first.should_not be_nil
+    end
   end
 end
