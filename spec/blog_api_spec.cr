@@ -37,7 +37,9 @@ describe App do
     it "creates post" do
       user = UserBox.create
 
-      visitor.post("/posts", new_post_data)
+      visitor.post("/posts",
+                   new_post_data,
+                   { "Authorization" => generate_token(user) })
 
       visitor.response_body["title"].should eq "New Post"
     end
@@ -75,9 +77,10 @@ describe App do
 
     it "allows authenticated users to create posts" do
       user = UserBox.create
-      token = generate_token(user)
 
-      visitor.post("/posts", new_post_data, { "Authorization" => token })
+      visitor.post("/posts",
+                   new_post_data,
+                   { "Authorization" => generate_token(user) })
 
       visitor.response_body["title"].should eq new_post_data["post:title"]
     end
