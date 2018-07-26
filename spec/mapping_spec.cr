@@ -14,7 +14,7 @@ describe App do
         SELECT
           posts.id,
           posts.title,
-          posts.content,
+          ('PREFIX: ' || posts.content) as custom_key,
           json_build_object(
             'name', users.name,
             'email', users.email
@@ -29,8 +29,9 @@ describe App do
       end
 
       posts.size.should eq 1
-      posts.first.title.should eq "DB mapping"
-      posts.first.author["name"].should eq "Mikias"
+      posts.first.title.should eq post.title
+      posts.first.content.should eq "PREFIX: " + post.content
+      posts.first.author["name"].should eq user.name
     end
   end
 end
@@ -39,7 +40,11 @@ class CustomPost
   DB.mapping({
     id: Int32,
     title: String,
-    content: String,
+    content: {
+        type: String,
+        nilable: false,
+        key: "custom_key"
+    },
     author: JSON::Any
   })
 end
