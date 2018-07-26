@@ -21,7 +21,7 @@ class AppVisitor
 
   def response_body
     body = @response.not_nil!.body
-    if body[0,5] == "ERROR"
+    if body[0, 5] == "ERROR"
       raise Exception.new(body)
     else
       JSON.parse(body)
@@ -62,7 +62,7 @@ class AppVisitor
       Lucky::ErrorHandler.new(action: Errors::Show),
       Lucky::RouteHandler.new,
       Lucky::StaticFileHandler.new("./public", false),
-      Lucky::RouteNotFoundHandler.new
+      Lucky::RouteNotFoundHandler.new,
     ])
   end
 

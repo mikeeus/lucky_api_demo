@@ -5,7 +5,7 @@ class Posts::IndexSerializer < Lucky::Serializer
   def render
     {
       posts: @posts.map { |post| ShowSerializer.new(post) },
-      total: @total
+      total: @total,
     }
   end
 end

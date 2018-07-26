@@ -7,7 +7,7 @@ describe App do
     it "says hello" do
       visitor.visit("/")
 
-      visitor.response_body.should eq ({ "hello" => "Hello World from Home::Index" })
+      visitor.response_body.should eq ({"hello" => "Hello World from Home::Index"})
     end
   end
 
@@ -36,11 +36,11 @@ describe App do
       user = UserBox.create
 
       visitor.post("/posts", ({
-        "post:title" => "New Post",
-        "post:content" => "Probably the best post you've ever read",
+        "post:title"        => "New Post",
+        "post:content"      => "Probably the best post you've ever read",
         "post:published_at" => Time.now.to_s,
-        "post:tags" => "dope, informative",
-        "post:comment_id" => "1"
+        "post:tags"         => "dope, informative",
+        "post:comment_id"   => "1",
       }))
 
       visitor.response_body["title"].should eq "New Post"
